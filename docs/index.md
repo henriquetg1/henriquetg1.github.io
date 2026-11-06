@@ -17,7 +17,7 @@ figures shown in the report (`figures/`).
 - [x] [1. Data](exercises/data/index.md) — 10.sep.2026
 - [x] [2. Perceptron](exercises/perceptron/index.md) — 22.sep.2026
 - [x] [3. MLP](exercises/mlp/index.md) — 06.nov.2026
-- [ ] 4. VAE
+- [x] [4. VAE](exercises/vae/index.md) — 06.nov.2026
 - [ ] Projects
 
 ## Reproducing
@@ -29,5 +29,6 @@ pip install -r requirements.txt
 python docs/exercises/data/code/main.py         # Data: figures, tables, results.json
 python docs/exercises/perceptron/code/main.py   # Perceptron: figures, results.json
 python docs/exercises/mlp/code/exercises.py     # MLP: figures, printed results
+python docs/exercises/vae/code/exercises.py     # VAE: figures, printed results
 mkdocs serve -o                           # preview the site locally
 ```

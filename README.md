@@ -18,6 +18,7 @@ python3 -m pip install -r requirements.txt --upgrade
 python docs/exercises/data/code/main.py
 python docs/exercises/perceptron/code/main.py
 python docs/exercises/mlp/code/exercises.py
+python docs/exercises/vae/code/exercises.py
 ```
 
 ## Site

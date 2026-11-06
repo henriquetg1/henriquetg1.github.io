@@ -1,0 +1,1605 @@
+<!DOCTYPE html><html lang="en" class="no-js"><head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Henrique Turco">
+      
+      
+        <link rel="canonical" href="https://henriquetg1.github.io/ann-dl/exercises/vae/">
+      
+      
+        <link rel="prev" href="../mlp/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.0">
+    
+    
+      
+        <title>4. VAE - ANN &amp; Deep Learning — Henrique Turco</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.57a0d79d.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.fb2fffe2.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  <link href="../../assets/stylesheets/glightbox.min.css" rel="stylesheet"><script src="../../assets/javascripts/glightbox.min.js"></script><style id="glightbox-style">
+            html.glightbox-open { overflow: initial; height: 100%; }
+            .gslide-title { margin-top: 0px; user-select: text; }
+            .gslide-desc { color: #666; user-select: text; }
+            .gslide-image img { background: white; }
+            .gscrollbar-fixer { padding-right: 15px; }
+            .gdesc-inner { font-size: 0.75rem; }
+            body[data-md-color-scheme="slate"] .gdesc-inner { background: var(--md-default-bg-color); }
+            body[data-md-color-scheme="slate"] .gslide-title { color: var(--md-default-fg-color); }
+            body[data-md-color-scheme="slate"] .gslide-desc { color: var(--md-default-fg-color); }
+        </style></head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#4-vae" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ANN &amp; Deep Learning — Henrique Turco" class="md-header__button md-logo" aria-label="ANN &amp; Deep Learning — Henrique Turco" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ANN &amp; Deep Learning — Henrique Turco
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              4. VAE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="grey" data-md-color-accent="indigo" aria-label="Switch to dark mode" type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"></path></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="grey" data-md-color-accent="indigo" aria-label="Switch to light mode" type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden="">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"></path></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required="">
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix="">
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/henriquetg1/ann-dl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    henriquetg1/ann-dl
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ANN &amp; Deep Learning — Henrique Turco" class="md-nav__button md-logo" aria-label="ANN &amp; Deep Learning — Henrique Turco" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+
+    </a>
+    ANN &amp; Deep Learning — Henrique Turco
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/henriquetg1/ann-dl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"></path></svg>
+  </div>
+  <div class="md-source__repository">
+    henriquetg1/ann-dl
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix="">
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked="">
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Exercises
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Exercises
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix="">
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    1. Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../perceptron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    2. Perceptron
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mlp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    3. MLP
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. VAE
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    4. VAE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-load-and-split-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A — Load and split the data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-build-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B — Build the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C — Train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-reconstructions-and-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D — Reconstructions and samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E — Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-train-a-2-d-vae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A — Train a 2-D VAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-the-encoded-test-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B — The encoded test set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-the-decoded-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C — The decoded plane
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D — Interpolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-analysis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E — Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#results-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+      
+        <li class="md-nav__item">
+  <a href="#exercise-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-load-and-split-the-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A — Load and split the data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-build-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B — Build the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-train" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C — Train
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-reconstructions-and-samples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D — Reconstructions and samples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E — Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercise-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercise 2
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exercise 2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-train-a-2-d-vae" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A — Train a 2-D VAE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-the-encoded-test-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B — The encoded test set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-the-decoded-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C — The decoded plane
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#d-interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        D — Interpolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#e-analysis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E — Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#results-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Results summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation">
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../data/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Exercises
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="4-vae">4. VAE<a class="headerlink" href="#4-vae" title="Permanent link">¶</a></h1>
+<p>Every number and figure in this report comes from one script, run from the repository root. It downloads MNIST into <code>./data</code> on the first run, then takes about a minute on one CPU thread:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>docs/exercises/vae/code/exercises.py
+</span></code></pre></div>
+<p><code>torch.manual_seed(42)</code> runs before each model is built, and Figure 3 uses <code>torch.manual_seed(0)</code>. Two runs in a row gave identical numbers and figures. All loss values are in nats per image.</p>
+<h2 id="exercise-1">Exercise 1<a class="headerlink" href="#exercise-1" title="Permanent link">¶</a></h2>
+<h3 id="a-load-and-split-the-data">A — Load and split the data<a class="headerlink" href="#a-load-and-split-the-data" title="Permanent link">¶</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">train_full</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s2">"data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">())</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">test</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s2">"data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">())</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">train</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">random_split</span><span class="p">(</span><span class="n">train_full</span><span class="p">,</span> <span class="p">[</span><span class="mi">50_000</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">],</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                          <span class="n">generator</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">))</span>
+</span></code></pre></div>
+<p>This gives 50 000 training, 10 000 validation and 10 000 test images. For speed, the script then indexes the pixels directly using the split's indices. An assertion checks that the values match <code>ToTensor</code>. The test set is only touched after each model finishes training.</p>
+<h3 id="b-build-the-model">B — Build the model<a class="headerlink" href="#b-build-the-model" title="Permanent link">¶</a></h3>
+<p>The architecture is the one specified: encoder <span class="arithmatex">\(784 \to 512 \to 256\)</span>, two heads <span class="arithmatex">\(256 \to d\)</span> for <span class="arithmatex">\(\mu\)</span> and <span class="arithmatex">\(\log\sigma^2\)</span>, and decoder <span class="arithmatex">\(d \to 256 \to 512 \to 784\)</span> with a sigmoid output, using <span class="arithmatex">\(d = 16\)</span>. Three parts are hand-written in <code>code/vae.py</code>:</p>
+<ul>
+<li><strong>Reparameterization:</strong> <span class="arithmatex">\(z = \mu + \sigma \odot \epsilon\)</span>, with <span class="arithmatex">\(\epsilon \sim N(0, I)\)</span> and <span class="arithmatex">\(\sigma = e^{\frac{1}{2}\log\sigma^2}\)</span>.</li>
+<li><strong>Reconstruction:</strong> <code>F.binary_cross_entropy(x_hat, x, reduction="sum")</code> divided by the batch size.</li>
+<li><strong>KL:</strong> the closed form <span class="arithmatex">\(\frac{1}{2}\sum_i(\mu_i^2 + \sigma_i^2 - 1 - \log\sigma_i^2)\)</span>, written out and divided by the batch size.</li>
+</ul>
+<details class="example">
+<summary>The VAE, its loss and its training loop — <code>code/vae.py</code></summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="sd">"""A variational autoencoder for flattened MNIST, written by hand.</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="sd">PyTorch provides the layers, autograd and Adam. The VAE-specific parts are all</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="sd">here: the reparameterization, both terms of the loss, and sampling from the prior.</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="sd">"""</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">128</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="n">LEARNING_RATE</span> <span class="o">=</span> <span class="mf">1e-3</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="n">EPOCHS</span> <span class="o">=</span> <span class="mi">20</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="k">class</span><span class="w"> </span><span class="nc">VAE</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="sd">"""Encoder 784 -&gt; 512 -&gt; 256, heads 256 -&gt; d, decoder d -&gt; 256 -&gt; 512 -&gt; 784."""</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latent_dim</span><span class="p">):</span>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span> <span class="o">=</span> <span class="n">latent_dim</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">784</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>        <span class="p">)</span>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">mu_head</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">latent_dim</span><span class="p">)</span>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">logvar_head</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">latent_dim</span><span class="p">)</span>
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span>
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">784</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sigmoid</span><span class="p">(),</span>
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>        <span class="p">)</span>
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>        <span class="n">hidden</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">mu_head</span><span class="p">(</span><span class="n">hidden</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">logvar_head</span><span class="p">(</span><span class="n">hidden</span><span class="p">)</span>
+</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>
+</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decoder</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>
+</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">reparameterize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">):</span>
+</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>        <span class="c1"># z = mu + sigma * eps. The noise sits outside the path from mu and sigma,</span>
+</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a>        <span class="c1"># so gradients can flow through both of them.</span>
+</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a>        <span class="n">sigma</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">logvar</span><span class="p">)</span>
+</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>        <span class="n">eps</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn_like</span><span class="p">(</span><span class="n">sigma</span><span class="p">)</span>
+</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>        <span class="k">return</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">eps</span>
+</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>
+</span><span id="__span-2-48"><a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span><span id="__span-2-49"><a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a>        <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span id="__span-2-50"><a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a>        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reparameterize</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span>
+</span><span id="__span-2-51"><a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span>
+</span><span id="__span-2-52"><a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>
+</span><span id="__span-2-53"><a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+</span><span id="__span-2-54"><a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a>        <span class="c1"># z ~ N(0, I), the prior, pushed through the decoder</span>
+</span><span id="__span-2-55"><a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a>        <span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">latent_dim</span><span class="p">)</span>
+</span><span id="__span-2-56"><a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</span><span id="__span-2-57"><a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a>
+</span><span id="__span-2-58"><a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a>
+</span><span id="__span-2-59"><a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a><span class="k">def</span><span class="w"> </span><span class="nf">loss_terms</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">):</span>
+</span><span id="__span-2-60"><a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a><span class="w">    </span><span class="sd">"""Return both loss terms in nats per image: summed over pixels, averaged over images."""</span>
+</span><span id="__span-2-61"><a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a>    <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-2-62"><a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a>    <span class="n">reconstruction</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy</span><span class="p">(</span><span class="n">x_hat</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">reduction</span><span class="o">=</span><span class="s2">"sum"</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span>
+</span><span id="__span-2-63"><a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a>    <span class="c1"># Closed-form KL between N(mu, sigma^2) and N(0, I), summed over latent dimensions</span>
+</span><span id="__span-2-64"><a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a>    <span class="n">kl</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">logvar</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">logvar</span><span class="p">)</span> <span class="o">/</span> <span class="n">batch_size</span>
+</span><span id="__span-2-65"><a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a>    <span class="k">return</span> <span class="n">reconstruction</span><span class="p">,</span> <span class="n">kl</span>
+</span><span id="__span-2-66"><a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a>
+</span><span id="__span-2-67"><a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a>
+</span><span id="__span-2-68"><a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a><span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+</span><span id="__span-2-69"><a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a><span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span><span id="__span-2-70"><a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a><span class="w">    </span><span class="sd">"""Average both loss terms over a dataset, with z sampled as in training."""</span>
+</span><span id="__span-2-71"><a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a>    <span class="n">totals</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-2-72"><a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a>    <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">):</span>
+</span><span id="__span-2-73"><a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a>        <span class="n">x_hat</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</span><span id="__span-2-74"><a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a>        <span class="n">reconstruction</span><span class="p">,</span> <span class="n">kl</span> <span class="o">=</span> <span class="n">loss_terms</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span>
+</span><span id="__span-2-75"><a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a>        <span class="n">totals</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">reconstruction</span><span class="p">,</span> <span class="n">kl</span><span class="p">))</span> <span class="o">*</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-2-76"><a id="__codelineno-2-76" name="__codelineno-2-76" href="#__codelineno-2-76"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">totals</span> <span class="o">/</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</span><span id="__span-2-77"><a id="__codelineno-2-77" name="__codelineno-2-77" href="#__codelineno-2-77"></a>
+</span><span id="__span-2-78"><a id="__codelineno-2-78" name="__codelineno-2-78" href="#__codelineno-2-78"></a>
+</span><span id="__span-2-79"><a id="__codelineno-2-79" name="__codelineno-2-79" href="#__codelineno-2-79"></a><span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">EPOCHS</span><span class="p">):</span>
+</span><span id="__span-2-80"><a id="__codelineno-2-80" name="__codelineno-2-80" href="#__codelineno-2-80"></a><span class="w">    </span><span class="sd">"""Train with Adam (beta = 1) and log both terms on train and validation each epoch."""</span>
+</span><span id="__span-2-81"><a id="__codelineno-2-81" name="__codelineno-2-81" href="#__codelineno-2-81"></a>    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LEARNING_RATE</span><span class="p">)</span>
+</span><span id="__span-2-82"><a id="__codelineno-2-82" name="__codelineno-2-82" href="#__codelineno-2-82"></a>    <span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"train_rec"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"train_kl"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"val_rec"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"val_kl"</span><span class="p">:</span> <span class="p">[]}</span>
+</span><span id="__span-2-83"><a id="__codelineno-2-83" name="__codelineno-2-83" href="#__codelineno-2-83"></a>
+</span><span id="__span-2-84"><a id="__codelineno-2-84" name="__codelineno-2-84" href="#__codelineno-2-84"></a>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+</span><span id="__span-2-85"><a id="__codelineno-2-85" name="__codelineno-2-85" href="#__codelineno-2-85"></a>        <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+</span><span id="__span-2-86"><a id="__codelineno-2-86" name="__codelineno-2-86" href="#__codelineno-2-86"></a>        <span class="n">totals</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-2-87"><a id="__codelineno-2-87" name="__codelineno-2-87" href="#__codelineno-2-87"></a>        <span class="k">for</span> <span class="n">indices</span> <span class="ow">in</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">BATCH_SIZE</span><span class="p">):</span>
+</span><span id="__span-2-88"><a id="__codelineno-2-88" name="__codelineno-2-88" href="#__codelineno-2-88"></a>            <span class="n">batch</span> <span class="o">=</span> <span class="n">x_train</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+</span><span id="__span-2-89"><a id="__codelineno-2-89" name="__codelineno-2-89" href="#__codelineno-2-89"></a>            <span class="n">x_hat</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+</span><span id="__span-2-90"><a id="__codelineno-2-90" name="__codelineno-2-90" href="#__codelineno-2-90"></a>            <span class="n">reconstruction</span><span class="p">,</span> <span class="n">kl</span> <span class="o">=</span> <span class="n">loss_terms</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">x_hat</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span>
+</span><span id="__span-2-91"><a id="__codelineno-2-91" name="__codelineno-2-91" href="#__codelineno-2-91"></a>            <span class="n">loss</span> <span class="o">=</span> <span class="n">reconstruction</span> <span class="o">+</span> <span class="n">kl</span>
+</span><span id="__span-2-92"><a id="__codelineno-2-92" name="__codelineno-2-92" href="#__codelineno-2-92"></a>
+</span><span id="__span-2-93"><a id="__codelineno-2-93" name="__codelineno-2-93" href="#__codelineno-2-93"></a>            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+</span><span id="__span-2-94"><a id="__codelineno-2-94" name="__codelineno-2-94" href="#__codelineno-2-94"></a>            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+</span><span id="__span-2-95"><a id="__codelineno-2-95" name="__codelineno-2-95" href="#__codelineno-2-95"></a>            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</span><span id="__span-2-96"><a id="__codelineno-2-96" name="__codelineno-2-96" href="#__codelineno-2-96"></a>
+</span><span id="__span-2-97"><a id="__codelineno-2-97" name="__codelineno-2-97" href="#__codelineno-2-97"></a>            <span class="n">totals</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">reconstruction</span><span class="p">,</span> <span class="n">kl</span><span class="p">))</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="o">*</span> <span class="n">batch</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-2-98"><a id="__codelineno-2-98" name="__codelineno-2-98" href="#__codelineno-2-98"></a>
+</span><span id="__span-2-99"><a id="__codelineno-2-99" name="__codelineno-2-99" href="#__codelineno-2-99"></a>        <span class="c1"># Training numbers are the running average over the epoch, as the statement asks</span>
+</span><span id="__span-2-100"><a id="__codelineno-2-100" name="__codelineno-2-100" href="#__codelineno-2-100"></a>        <span class="n">train_rec</span><span class="p">,</span> <span class="n">train_kl</span> <span class="o">=</span> <span class="p">(</span><span class="n">totals</span> <span class="o">/</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+</span><span id="__span-2-101"><a id="__codelineno-2-101" name="__codelineno-2-101" href="#__codelineno-2-101"></a>        <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</span><span id="__span-2-102"><a id="__codelineno-2-102" name="__codelineno-2-102" href="#__codelineno-2-102"></a>        <span class="n">val_rec</span><span class="p">,</span> <span class="n">val_kl</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x_val</span><span class="p">)</span>
+</span><span id="__span-2-103"><a id="__codelineno-2-103" name="__codelineno-2-103" href="#__codelineno-2-103"></a>
+</span><span id="__span-2-104"><a id="__codelineno-2-104" name="__codelineno-2-104" href="#__codelineno-2-104"></a>        <span class="n">history</span><span class="p">[</span><span class="s2">"train_rec"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_rec</span><span class="p">)</span>
+</span><span id="__span-2-105"><a id="__codelineno-2-105" name="__codelineno-2-105" href="#__codelineno-2-105"></a>        <span class="n">history</span><span class="p">[</span><span class="s2">"train_kl"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">train_kl</span><span class="p">)</span>
+</span><span id="__span-2-106"><a id="__codelineno-2-106" name="__codelineno-2-106" href="#__codelineno-2-106"></a>        <span class="n">history</span><span class="p">[</span><span class="s2">"val_rec"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_rec</span><span class="p">)</span>
+</span><span id="__span-2-107"><a id="__codelineno-2-107" name="__codelineno-2-107" href="#__codelineno-2-107"></a>        <span class="n">history</span><span class="p">[</span><span class="s2">"val_kl"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val_kl</span><span class="p">)</span>
+</span><span id="__span-2-108"><a id="__codelineno-2-108" name="__codelineno-2-108" href="#__codelineno-2-108"></a>
+</span><span id="__span-2-109"><a id="__codelineno-2-109" name="__codelineno-2-109" href="#__codelineno-2-109"></a>    <span class="k">return</span> <span class="n">history</span>
+</span></code></pre></div>
+</details>
+<h3 id="c-train">C — Train<a class="headerlink" href="#c-train" title="Permanent link">¶</a></h3>
+<p>Adam with learning rate <span class="arithmatex">\(10^{-3}\)</span>, batch size 128, 20 epochs and <span class="arithmatex">\(\beta = 1\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th>Test set, <span class="arithmatex">\(d = 16\)</span></th>
+<th>Nats per image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reconstruction</td>
+<td><strong>81.96</strong></td>
+</tr>
+<tr>
+<td>KL</td>
+<td><strong>19.36</strong></td>
+</tr>
+<tr>
+<td>Negative ELBO</td>
+<td><strong>101.31</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The negative ELBO is summed before rounding, so it differs by 0.01 from adding the two rounded values.</p>
+<table>
+<thead>
+<tr>
+<th>Epoch</th>
+<th>Train reconstruction</th>
+<th>Train KL</th>
+<th>Validation reconstruction</th>
+<th>Validation KL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>175.88</td>
+<td>6.85</td>
+<td>129.63</td>
+<td>12.48</td>
+</tr>
+<tr>
+<td>2</td>
+<td>116.25</td>
+<td>14.60</td>
+<td>107.25</td>
+<td>15.78</td>
+</tr>
+<tr>
+<td>3</td>
+<td>102.40</td>
+<td>16.41</td>
+<td>99.28</td>
+<td>16.81</td>
+</tr>
+<tr>
+<td>5</td>
+<td>93.75</td>
+<td>17.40</td>
+<td>93.35</td>
+<td>17.32</td>
+</tr>
+<tr>
+<td>10</td>
+<td>86.44</td>
+<td>18.56</td>
+<td>86.74</td>
+<td>18.82</td>
+</tr>
+<tr>
+<td>20</td>
+<td>80.96</td>
+<td>19.53</td>
+<td>82.62</td>
+<td>19.30</td>
+</tr>
+</tbody>
+</table>
+<p>Training numbers are the running average over each epoch, while validation is measured at its end. That is why validation looks better in epoch 1.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig1.png" data-desc-position="bottom"><img alt="Figure 1" src="figures/fig1.png"></a></p>
+<details class="example">
+<summary>Data, figures and reported numbers — <code>code/exercises.py</code></summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="sd">"""Runs Exercises 1 and 2: data, training, Figures 1-6 and every reported number.</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="sd">Usage, from the repository root: python docs/exercises/vae/code/exercises.py</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="sd">MNIST is downloaded into ./data on the first run.</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="sd">"""</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">"Agg"</span><span class="p">)</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.patheffects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">path_effects</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.patches</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rectangle</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial</span><span class="w"> </span><span class="kn">import</span> <span class="n">cKDTree</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">norm</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">random_split</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="kn">from</span><span class="w"> </span><span class="nn">vae</span><span class="w"> </span><span class="kn">import</span> <span class="n">EPOCHS</span><span class="p">,</span> <span class="n">VAE</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">loss_terms</span><span class="p">,</span> <span class="n">train</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="n">FIGURES</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">"figures"</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="n">FIGURES</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="n">SEED</span> <span class="o">=</span> <span class="mi">42</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="n">INTERPOLATION_PAIR</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># test indices: the first 0 and the first 1</span>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="n">BLUE</span><span class="p">,</span> <span class="n">ORANGE</span> <span class="o">=</span> <span class="s2">"#2a78d6"</span><span class="p">,</span> <span class="s2">"#eb6834"</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="n">INK</span><span class="p">,</span> <span class="n">SECONDARY_INK</span> <span class="o">=</span> <span class="s2">"#0b0b0b"</span><span class="p">,</span> <span class="s2">"#52514e"</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c1"># Eight palette hues, then two repeated with another marker, so ten digits stay distinct</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="n">DIGIT_STYLES</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>    <span class="p">(</span><span class="n">BLUE</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="n">ORANGE</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#1baf7a"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#eda100"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#e87ba4"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>    <span class="p">(</span><span class="s2">"#008300"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#6250d6"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="s2">"#e34948"</span><span class="p">,</span> <span class="s2">"o"</span><span class="p">),</span> <span class="p">(</span><span class="n">BLUE</span><span class="p">,</span> <span class="s2">"^"</span><span class="p">),</span> <span class="p">(</span><span class="n">ORANGE</span><span class="p">,</span> <span class="s2">"^"</span><span class="p">),</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="p">]</span>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>
+</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>    <span class="p">{</span>
+</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>        <span class="s2">"figure.dpi"</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span>
+</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>        <span class="s2">"savefig.bbox"</span><span class="p">:</span> <span class="s2">"tight"</span><span class="p">,</span>
+</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>        <span class="s2">"axes.edgecolor"</span><span class="p">:</span> <span class="s2">"#c3c2b7"</span><span class="p">,</span>
+</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>        <span class="s2">"axes.labelcolor"</span><span class="p">:</span> <span class="n">SECONDARY_INK</span><span class="p">,</span>
+</span><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a>        <span class="s2">"axes.titlecolor"</span><span class="p">:</span> <span class="n">INK</span><span class="p">,</span>
+</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a>        <span class="s2">"axes.spines.top"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>        <span class="s2">"axes.spines.right"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a>        <span class="s2">"axes.grid"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a>        <span class="s2">"axes.axisbelow"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a>        <span class="s2">"grid.color"</span><span class="p">:</span> <span class="s2">"#e1e0d9"</span><span class="p">,</span>
+</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a>        <span class="s2">"grid.linewidth"</span><span class="p">:</span> <span class="mf">0.6</span><span class="p">,</span>
+</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a>        <span class="s2">"xtick.labelcolor"</span><span class="p">:</span> <span class="n">SECONDARY_INK</span><span class="p">,</span>
+</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a>        <span class="s2">"ytick.labelcolor"</span><span class="p">:</span> <span class="n">SECONDARY_INK</span><span class="p">,</span>
+</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>        <span class="s2">"xtick.color"</span><span class="p">:</span> <span class="s2">"#c3c2b7"</span><span class="p">,</span>
+</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a>        <span class="s2">"ytick.color"</span><span class="p">:</span> <span class="s2">"#c3c2b7"</span><span class="p">,</span>
+</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a>        <span class="s2">"legend.frameon"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a>        <span class="s2">"lines.linewidth"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a>    <span class="p">}</span>
+</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="p">)</span>
+</span><span id="__span-3-59"><a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a>
+</span><span id="__span-3-60"><a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a>
+</span><span id="__span-3-61"><a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_data</span><span class="p">():</span>
+</span><span id="__span-3-62"><a id="__codelineno-3-62" name="__codelineno-3-62" href="#__codelineno-3-62"></a><span class="w">    </span><span class="sd">"""The statement's split, then all pixels as tensors so that an epoch takes seconds."""</span>
+</span><span id="__span-3-63"><a id="__codelineno-3-63" name="__codelineno-3-63" href="#__codelineno-3-63"></a>    <span class="n">train_full</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s2">"data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">())</span>
+</span><span id="__span-3-64"><a id="__codelineno-3-64" name="__codelineno-3-64" href="#__codelineno-3-64"></a>    <span class="n">test</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">MNIST</span><span class="p">(</span><span class="s2">"data"</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">())</span>
+</span><span id="__span-3-65"><a id="__codelineno-3-65" name="__codelineno-3-65" href="#__codelineno-3-65"></a>    <span class="n">train_set</span><span class="p">,</span> <span class="n">val_set</span> <span class="o">=</span> <span class="n">random_split</span><span class="p">(</span>
+</span><span id="__span-3-66"><a id="__codelineno-3-66" name="__codelineno-3-66" href="#__codelineno-3-66"></a>        <span class="n">train_full</span><span class="p">,</span> <span class="p">[</span><span class="mi">50_000</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">],</span> <span class="n">generator</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>
+</span><span id="__span-3-67"><a id="__codelineno-3-67" name="__codelineno-3-67" href="#__codelineno-3-67"></a>    <span class="p">)</span>
+</span><span id="__span-3-68"><a id="__codelineno-3-68" name="__codelineno-3-68" href="#__codelineno-3-68"></a>
+</span><span id="__span-3-69"><a id="__codelineno-3-69" name="__codelineno-3-69" href="#__codelineno-3-69"></a>    <span class="c1"># Same values as ToTensor: bytes divided by 255, flattened into 784-vectors</span>
+</span><span id="__span-3-70"><a id="__codelineno-3-70" name="__codelineno-3-70" href="#__codelineno-3-70"></a>    <span class="n">pixels</span> <span class="o">=</span> <span class="n">train_full</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+</span><span id="__span-3-71"><a id="__codelineno-3-71" name="__codelineno-3-71" href="#__codelineno-3-71"></a>    <span class="k">assert</span> <span class="n">torch</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">pixels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">train_full</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+</span><span id="__span-3-72"><a id="__codelineno-3-72" name="__codelineno-3-72" href="#__codelineno-3-72"></a>    <span class="n">x_test</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+</span><span id="__span-3-73"><a id="__codelineno-3-73" name="__codelineno-3-73" href="#__codelineno-3-73"></a>    <span class="k">return</span> <span class="n">pixels</span><span class="p">[</span><span class="n">train_set</span><span class="o">.</span><span class="n">indices</span><span class="p">],</span> <span class="n">pixels</span><span class="p">[</span><span class="n">val_set</span><span class="o">.</span><span class="n">indices</span><span class="p">],</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">targets</span>
+</span><span id="__span-3-74"><a id="__codelineno-3-74" name="__codelineno-3-74" href="#__codelineno-3-74"></a>
+</span><span id="__span-3-75"><a id="__codelineno-3-75" name="__codelineno-3-75" href="#__codelineno-3-75"></a>
+</span><span id="__span-3-76"><a id="__codelineno-3-76" name="__codelineno-3-76" href="#__codelineno-3-76"></a><span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+</span><span id="__span-3-77"><a id="__codelineno-3-77" name="__codelineno-3-77" href="#__codelineno-3-77"></a><span class="w">    </span><span class="sd">"""Lay flattened images out on one canvas, with a faint line between the cells."""</span>
+</span><span id="__span-3-78"><a id="__codelineno-3-78" name="__codelineno-3-78" href="#__codelineno-3-78"></a>    <span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span><span id="__span-3-79"><a id="__codelineno-3-79" name="__codelineno-3-79" href="#__codelineno-3-79"></a>    <span class="n">step</span> <span class="o">=</span> <span class="n">size</span> <span class="o">+</span> <span class="n">gap</span>
+</span><span id="__span-3-80"><a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a>    <span class="n">canvas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">rows</span> <span class="o">*</span> <span class="n">step</span> <span class="o">-</span> <span class="n">gap</span><span class="p">,</span> <span class="n">cols</span> <span class="o">*</span> <span class="n">step</span> <span class="o">-</span> <span class="n">gap</span><span class="p">),</span> <span class="mf">0.12</span><span class="p">)</span>
+</span><span id="__span-3-81"><a id="__codelineno-3-81" name="__codelineno-3-81" href="#__codelineno-3-81"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">images</span><span class="p">):</span>
+</span><span id="__span-3-82"><a id="__codelineno-3-82" name="__codelineno-3-82" href="#__codelineno-3-82"></a>        <span class="n">row</span><span class="p">,</span> <span class="n">col</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
+</span><span id="__span-3-83"><a id="__codelineno-3-83" name="__codelineno-3-83" href="#__codelineno-3-83"></a>        <span class="n">canvas</span><span class="p">[</span><span class="n">row</span> <span class="o">*</span> <span class="n">step</span> <span class="p">:</span> <span class="n">row</span> <span class="o">*</span> <span class="n">step</span> <span class="o">+</span> <span class="n">size</span><span class="p">,</span> <span class="n">col</span> <span class="o">*</span> <span class="n">step</span> <span class="p">:</span> <span class="n">col</span> <span class="o">*</span> <span class="n">step</span> <span class="o">+</span> <span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">image</span>
+</span><span id="__span-3-84"><a id="__codelineno-3-84" name="__codelineno-3-84" href="#__codelineno-3-84"></a>    <span class="k">return</span> <span class="n">canvas</span>
+</span><span id="__span-3-85"><a id="__codelineno-3-85" name="__codelineno-3-85" href="#__codelineno-3-85"></a>
+</span><span id="__span-3-86"><a id="__codelineno-3-86" name="__codelineno-3-86" href="#__codelineno-3-86"></a>
+</span><span id="__span-3-87"><a id="__codelineno-3-87" name="__codelineno-3-87" href="#__codelineno-3-87"></a><span class="k">def</span><span class="w"> </span><span class="nf">show_grid</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">xticks</span><span class="o">=</span><span class="p">(),</span> <span class="n">yticks</span><span class="o">=</span><span class="p">(),</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.62</span><span class="p">):</span>
+</span><span id="__span-3-88"><a id="__codelineno-3-88" name="__codelineno-3-88" href="#__codelineno-3-88"></a><span class="w">    </span><span class="sd">"""Show a tile of images with a title, axis labels and optional tick labels."""</span>
+</span><span id="__span-3-89"><a id="__codelineno-3-89" name="__codelineno-3-89" href="#__codelineno-3-89"></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">cols</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span> <span class="n">rows</span> <span class="o">*</span> <span class="n">scale</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
+</span><span id="__span-3-90"><a id="__codelineno-3-90" name="__codelineno-3-90" href="#__codelineno-3-90"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tile</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray_r"</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-3-91"><a id="__codelineno-3-91" name="__codelineno-3-91" href="#__codelineno-3-91"></a>    <span class="n">centers</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="p">[</span><span class="mi">30</span> <span class="o">*</span> <span class="n">i</span> <span class="o">+</span> <span class="mf">13.5</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+</span><span id="__span-3-92"><a id="__codelineno-3-92" name="__codelineno-3-92" href="#__codelineno-3-92"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">centers</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">xticks</span><span class="p">)</span> <span class="k">else</span> <span class="p">[],</span> <span class="n">xticks</span><span class="p">)</span>
+</span><span id="__span-3-93"><a id="__codelineno-3-93" name="__codelineno-3-93" href="#__codelineno-3-93"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">centers</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yticks</span><span class="p">)</span> <span class="k">else</span> <span class="p">[],</span> <span class="n">yticks</span><span class="p">)</span>
+</span><span id="__span-3-94"><a id="__codelineno-3-94" name="__codelineno-3-94" href="#__codelineno-3-94"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">)</span>
+</span><span id="__span-3-95"><a id="__codelineno-3-95" name="__codelineno-3-95" href="#__codelineno-3-95"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-3-96"><a id="__codelineno-3-96" name="__codelineno-3-96" href="#__codelineno-3-96"></a>    <span class="k">for</span> <span class="n">spine</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+</span><span id="__span-3-97"><a id="__codelineno-3-97" name="__codelineno-3-97" href="#__codelineno-3-97"></a>        <span class="n">spine</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-3-98"><a id="__codelineno-3-98" name="__codelineno-3-98" href="#__codelineno-3-98"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">FIGURES</span> <span class="o">/</span> <span class="n">name</span><span class="p">)</span>
+</span><span id="__span-3-99"><a id="__codelineno-3-99" name="__codelineno-3-99" href="#__codelineno-3-99"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</span><span id="__span-3-100"><a id="__codelineno-3-100" name="__codelineno-3-100" href="#__codelineno-3-100"></a>
+</span><span id="__span-3-101"><a id="__codelineno-3-101" name="__codelineno-3-101" href="#__codelineno-3-101"></a>
+</span><span id="__span-3-102"><a id="__codelineno-3-102" name="__codelineno-3-102" href="#__codelineno-3-102"></a><span class="k">def</span><span class="w"> </span><span class="nf">train_model</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">):</span>
+</span><span id="__span-3-103"><a id="__codelineno-3-103" name="__codelineno-3-103" href="#__codelineno-3-103"></a>    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span>  <span class="c1"># before building each model, as the statement requires</span>
+</span><span id="__span-3-104"><a id="__codelineno-3-104" name="__codelineno-3-104" href="#__codelineno-3-104"></a>    <span class="n">model</span> <span class="o">=</span> <span class="n">VAE</span><span class="p">(</span><span class="n">latent_dim</span><span class="p">)</span>
+</span><span id="__span-3-105"><a id="__codelineno-3-105" name="__codelineno-3-105" href="#__codelineno-3-105"></a>    <span class="n">history</span> <span class="o">=</span> <span class="n">train</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">)</span>
+</span><span id="__span-3-106"><a id="__codelineno-3-106" name="__codelineno-3-106" href="#__codelineno-3-106"></a>    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+</span><span id="__span-3-107"><a id="__codelineno-3-107" name="__codelineno-3-107" href="#__codelineno-3-107"></a>    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span>
+</span><span id="__span-3-108"><a id="__codelineno-3-108" name="__codelineno-3-108" href="#__codelineno-3-108"></a>
+</span><span id="__span-3-109"><a id="__codelineno-3-109" name="__codelineno-3-109" href="#__codelineno-3-109"></a>
+</span><span id="__span-3-110"><a id="__codelineno-3-110" name="__codelineno-3-110" href="#__codelineno-3-110"></a><span class="k">def</span><span class="w"> </span><span class="nf">plot_history</span><span class="p">(</span><span class="n">history</span><span class="p">):</span>
+</span><span id="__span-3-111"><a id="__codelineno-3-111" name="__codelineno-3-111" href="#__codelineno-3-111"></a>    <span class="n">epochs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">EPOCHS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-3-112"><a id="__codelineno-3-112" name="__codelineno-3-112" href="#__codelineno-3-112"></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mf">3.4</span><span class="p">))</span>
+</span><span id="__span-3-113"><a id="__codelineno-3-113" name="__codelineno-3-113" href="#__codelineno-3-113"></a>    <span class="n">panels</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-3-114"><a id="__codelineno-3-114" name="__codelineno-3-114" href="#__codelineno-3-114"></a>        <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"rec"</span><span class="p">,</span> <span class="s2">"Reconstruction (nats per image)"</span><span class="p">,</span> <span class="s2">"Reconstruction term"</span><span class="p">),</span>
+</span><span id="__span-3-115"><a id="__codelineno-3-115" name="__codelineno-3-115" href="#__codelineno-3-115"></a>        <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">"kl"</span><span class="p">,</span> <span class="s2">"KL (nats per image)"</span><span class="p">,</span> <span class="s2">"KL term"</span><span class="p">),</span>
+</span><span id="__span-3-116"><a id="__codelineno-3-116" name="__codelineno-3-116" href="#__codelineno-3-116"></a>    <span class="p">)</span>
+</span><span id="__span-3-117"><a id="__codelineno-3-117" name="__codelineno-3-117" href="#__codelineno-3-117"></a>    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">title</span> <span class="ow">in</span> <span class="n">panels</span><span class="p">:</span>
+</span><span id="__span-3-118"><a id="__codelineno-3-118" name="__codelineno-3-118" href="#__codelineno-3-118"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="sa">f</span><span class="s2">"train_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">BLUE</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Training"</span><span class="p">)</span>
+</span><span id="__span-3-119"><a id="__codelineno-3-119" name="__codelineno-3-119" href="#__codelineno-3-119"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="sa">f</span><span class="s2">"val_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">"</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="n">ORANGE</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Validation"</span><span class="p">)</span>
+</span><span id="__span-3-120"><a id="__codelineno-3-120" name="__codelineno-3-120" href="#__codelineno-3-120"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">xlabel</span><span class="o">=</span><span class="s2">"Epoch"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="n">ylabel</span><span class="p">)</span>
+</span><span id="__span-3-121"><a id="__codelineno-3-121" name="__codelineno-3-121" href="#__codelineno-3-121"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">])</span>
+</span><span id="__span-3-122"><a id="__codelineno-3-122" name="__codelineno-3-122" href="#__codelineno-3-122"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</span><span id="__span-3-123"><a id="__codelineno-3-123" name="__codelineno-3-123" href="#__codelineno-3-123"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Figure 1: both loss terms of the VAE with d = 16"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">INK</span><span class="p">)</span>
+</span><span id="__span-3-124"><a id="__codelineno-3-124" name="__codelineno-3-124" href="#__codelineno-3-124"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+</span><span id="__span-3-125"><a id="__codelineno-3-125" name="__codelineno-3-125" href="#__codelineno-3-125"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">FIGURES</span> <span class="o">/</span> <span class="s2">"fig1.png"</span><span class="p">)</span>
+</span><span id="__span-3-126"><a id="__codelineno-3-126" name="__codelineno-3-126" href="#__codelineno-3-126"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</span><span id="__span-3-127"><a id="__codelineno-3-127" name="__codelineno-3-127" href="#__codelineno-3-127"></a>
+</span><span id="__span-3-128"><a id="__codelineno-3-128" name="__codelineno-3-128" href="#__codelineno-3-128"></a>
+</span><span id="__span-3-129"><a id="__codelineno-3-129" name="__codelineno-3-129" href="#__codelineno-3-129"></a><span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+</span><span id="__span-3-130"><a id="__codelineno-3-130" name="__codelineno-3-130" href="#__codelineno-3-130"></a><span class="k">def</span><span class="w"> </span><span class="nf">exercise_1</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
+</span><span id="__span-3-131"><a id="__codelineno-3-131" name="__codelineno-3-131" href="#__codelineno-3-131"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"=== Exercise 1 ==="</span><span class="p">)</span>
+</span><span id="__span-3-132"><a id="__codelineno-3-132" name="__codelineno-3-132" href="#__codelineno-3-132"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Train </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span><span class="si">}</span><span class="s2">, validation </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_val</span><span class="p">)</span><span class="si">}</span><span class="s2">, test </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-133"><a id="__codelineno-3-133" name="__codelineno-3-133" href="#__codelineno-3-133"></a>    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">enable_grad</span><span class="p">():</span>
+</span><span id="__span-3-134"><a id="__codelineno-3-134" name="__codelineno-3-134" href="#__codelineno-3-134"></a>        <span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">)</span>
+</span><span id="__span-3-135"><a id="__codelineno-3-135" name="__codelineno-3-135" href="#__codelineno-3-135"></a>
+</span><span id="__span-3-136"><a id="__codelineno-3-136" name="__codelineno-3-136" href="#__codelineno-3-136"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"Epoch | train rec | train KL | val rec | val KL"</span><span class="p">)</span>
+</span><span id="__span-3-137"><a id="__codelineno-3-137" name="__codelineno-3-137" href="#__codelineno-3-137"></a>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">EPOCHS</span><span class="p">):</span>
+</span><span id="__span-3-138"><a id="__codelineno-3-138" name="__codelineno-3-138" href="#__codelineno-3-138"></a>        <span class="nb">print</span><span class="p">(</span>
+</span><span id="__span-3-139"><a id="__codelineno-3-139" name="__codelineno-3-139" href="#__codelineno-3-139"></a>            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">'train_rec'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">9.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">'train_kl'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">8.2f</span><span class="si">}</span><span class="s2"> | "</span>
+</span><span id="__span-3-140"><a id="__codelineno-3-140" name="__codelineno-3-140" href="#__codelineno-3-140"></a>            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">'val_rec'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">7.2f</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">history</span><span class="p">[</span><span class="s1">'val_kl'</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">6.2f</span><span class="si">}</span><span class="s2">"</span>
+</span><span id="__span-3-141"><a id="__codelineno-3-141" name="__codelineno-3-141" href="#__codelineno-3-141"></a>        <span class="p">)</span>
+</span><span id="__span-3-142"><a id="__codelineno-3-142" name="__codelineno-3-142" href="#__codelineno-3-142"></a>    <span class="n">plot_history</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+</span><span id="__span-3-143"><a id="__codelineno-3-143" name="__codelineno-3-143" href="#__codelineno-3-143"></a>
+</span><span id="__span-3-144"><a id="__codelineno-3-144" name="__codelineno-3-144" href="#__codelineno-3-144"></a>    <span class="n">test_rec</span><span class="p">,</span> <span class="n">test_kl</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+</span><span id="__span-3-145"><a id="__codelineno-3-145" name="__codelineno-3-145" href="#__codelineno-3-145"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Test reconstruction </span><span class="si">{</span><span class="n">test_rec</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, KL </span><span class="si">{</span><span class="n">test_kl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, "</span>
+</span><span id="__span-3-146"><a id="__codelineno-3-146" name="__codelineno-3-146" href="#__codelineno-3-146"></a>          <span class="sa">f</span><span class="s2">"negative ELBO </span><span class="si">{</span><span class="n">test_rec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">test_kl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-147"><a id="__codelineno-3-147" name="__codelineno-3-147" href="#__codelineno-3-147"></a>
+</span><span id="__span-3-148"><a id="__codelineno-3-148" name="__codelineno-3-148" href="#__codelineno-3-148"></a>    <span class="c1"># Figure 2: first test image of each digit, reconstructed by decoding mu</span>
+</span><span id="__span-3-149"><a id="__codelineno-3-149" name="__codelineno-3-149" href="#__codelineno-3-149"></a>    <span class="n">first</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">((</span><span class="n">y_test</span> <span class="o">==</span> <span class="n">digit</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</span><span id="__span-3-150"><a id="__codelineno-3-150" name="__codelineno-3-150" href="#__codelineno-3-150"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"First test index of digits 0-9: </span><span class="si">{</span><span class="n">first</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-151"><a id="__codelineno-3-151" name="__codelineno-3-151" href="#__codelineno-3-151"></a>    <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_test</span><span class="p">[</span><span class="n">first</span><span class="p">])</span>
+</span><span id="__span-3-152"><a id="__codelineno-3-152" name="__codelineno-3-152" href="#__codelineno-3-152"></a>    <span class="n">show_grid</span><span class="p">(</span>
+</span><span id="__span-3-153"><a id="__codelineno-3-153" name="__codelineno-3-153" href="#__codelineno-3-153"></a>        <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">x_test</span><span class="p">[</span><span class="n">first</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">mu</span><span class="p">))),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-3-154"><a id="__codelineno-3-154" name="__codelineno-3-154" href="#__codelineno-3-154"></a>        <span class="s2">"Figure 2: test images and their reconstructions from $</span><span class="se">\\</span><span class="s2">mu$"</span><span class="p">,</span>
+</span><span id="__span-3-155"><a id="__codelineno-3-155" name="__codelineno-3-155" href="#__codelineno-3-155"></a>        <span class="s2">"Digit"</span><span class="p">,</span> <span class="s2">"Row"</span><span class="p">,</span> <span class="s2">"fig2.png"</span><span class="p">,</span>
+</span><span id="__span-3-156"><a id="__codelineno-3-156" name="__codelineno-3-156" href="#__codelineno-3-156"></a>        <span class="n">xticks</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="s2">"Original"</span><span class="p">,</span> <span class="s2">"Reconstruction"</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+</span><span id="__span-3-157"><a id="__codelineno-3-157" name="__codelineno-3-157" href="#__codelineno-3-157"></a>    <span class="p">)</span>
+</span><span id="__span-3-158"><a id="__codelineno-3-158" name="__codelineno-3-158" href="#__codelineno-3-158"></a>
+</span><span id="__span-3-159"><a id="__codelineno-3-159" name="__codelineno-3-159" href="#__codelineno-3-159"></a>    <span class="c1"># Figure 3: samples from the prior</span>
+</span><span id="__span-3-160"><a id="__codelineno-3-160" name="__codelineno-3-160" href="#__codelineno-3-160"></a>    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-3-161"><a id="__codelineno-3-161" name="__codelineno-3-161" href="#__codelineno-3-161"></a>    <span class="n">show_grid</span><span class="p">(</span>
+</span><span id="__span-3-162"><a id="__codelineno-3-162" name="__codelineno-3-162" href="#__codelineno-3-162"></a>        <span class="n">model</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">64</span><span class="p">),</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span>
+</span><span id="__span-3-163"><a id="__codelineno-3-163" name="__codelineno-3-163" href="#__codelineno-3-163"></a>        <span class="s2">"Figure 3: images decoded from $z </span><span class="se">\\</span><span class="s2">sim N(0, I)$"</span><span class="p">,</span>
+</span><span id="__span-3-164"><a id="__codelineno-3-164" name="__codelineno-3-164" href="#__codelineno-3-164"></a>        <span class="s2">"Sample column"</span><span class="p">,</span> <span class="s2">"Sample row"</span><span class="p">,</span> <span class="s2">"fig3.png"</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+</span><span id="__span-3-165"><a id="__codelineno-3-165" name="__codelineno-3-165" href="#__codelineno-3-165"></a>    <span class="p">)</span>
+</span><span id="__span-3-166"><a id="__codelineno-3-166" name="__codelineno-3-166" href="#__codelineno-3-166"></a>
+</span><span id="__span-3-167"><a id="__codelineno-3-167" name="__codelineno-3-167" href="#__codelineno-3-167"></a>    <span class="c1"># Numbers for item E. Decoding mu against decoding a sampled z, on the whole test set:</span>
+</span><span id="__span-3-168"><a id="__codelineno-3-168" name="__codelineno-3-168" href="#__codelineno-3-168"></a>    <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+</span><span id="__span-3-169"><a id="__codelineno-3-169" name="__codelineno-3-169" href="#__codelineno-3-169"></a>    <span class="n">from_mu</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">loss_terms</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">mu</span><span class="p">),</span> <span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)</span>
+</span><span id="__span-3-170"><a id="__codelineno-3-170" name="__codelineno-3-170" href="#__codelineno-3-170"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Test reconstruction decoding mu: </span><span class="si">{</span><span class="n">from_mu</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (decoding a sampled z: </span><span class="si">{</span><span class="n">test_rec</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</span><span id="__span-3-171"><a id="__codelineno-3-171" name="__codelineno-3-171" href="#__codelineno-3-171"></a>
+</span><span id="__span-3-172"><a id="__codelineno-3-172" name="__codelineno-3-172" href="#__codelineno-3-172"></a>    <span class="c1"># Do prior samples land where the encoded images are? Compare in the active dimensions</span>
+</span><span id="__span-3-173"><a id="__codelineno-3-173" name="__codelineno-3-173" href="#__codelineno-3-173"></a>    <span class="c1"># only: the decoder ignores the others, so noise there would inflate every distance.</span>
+</span><span id="__span-3-174"><a id="__codelineno-3-174" name="__codelineno-3-174" href="#__codelineno-3-174"></a>    <span class="n">kl_per_dim</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">logvar</span><span class="o">.</span><span class="n">exp</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">logvar</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-3-175"><a id="__codelineno-3-175" name="__codelineno-3-175" href="#__codelineno-3-175"></a>    <span class="n">active</span> <span class="o">=</span> <span class="n">kl_per_dim</span> <span class="o">&gt;</span> <span class="mf">0.1</span>
+</span><span id="__span-3-176"><a id="__codelineno-3-176" name="__codelineno-3-176" href="#__codelineno-3-176"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"KL per latent dimension: </span><span class="si">{</span><span class="n">kl_per_dim</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-177"><a id="__codelineno-3-177" name="__codelineno-3-177" href="#__codelineno-3-177"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Active dimensions (KL &gt; 0.1): </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">active</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="si">}</span><span class="s2"> of 16"</span><span class="p">)</span>
+</span><span id="__span-3-178"><a id="__codelineno-3-178" name="__codelineno-3-178" href="#__codelineno-3-178"></a>    <span class="n">tree</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_train</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="n">active</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</span><span id="__span-3-179"><a id="__codelineno-3-179" name="__codelineno-3-179" href="#__codelineno-3-179"></a>    <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-3-180"><a id="__codelineno-3-180" name="__codelineno-3-180" href="#__codelineno-3-180"></a>        <span class="p">(</span><span class="s2">"test mu"</span><span class="p">,</span> <span class="n">mu</span><span class="p">),</span>
+</span><span id="__span-3-181"><a id="__codelineno-3-181" name="__codelineno-3-181" href="#__codelineno-3-181"></a>        <span class="p">(</span><span class="s2">"z sampled from test posteriors"</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">reparameterize</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">logvar</span><span class="p">)),</span>
+</span><span id="__span-3-182"><a id="__codelineno-3-182" name="__codelineno-3-182" href="#__codelineno-3-182"></a>        <span class="p">(</span><span class="s2">"z sampled from the prior"</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">10_000</span><span class="p">,</span> <span class="mi">16</span><span class="p">)),</span>
+</span><span id="__span-3-183"><a id="__codelineno-3-183" name="__codelineno-3-183" href="#__codelineno-3-183"></a>    <span class="p">)</span>
+</span><span id="__span-3-184"><a id="__codelineno-3-184" name="__codelineno-3-184" href="#__codelineno-3-184"></a>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">points</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+</span><span id="__span-3-185"><a id="__codelineno-3-185" name="__codelineno-3-185" href="#__codelineno-3-185"></a>        <span class="n">distance</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="n">active</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">workers</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-3-186"><a id="__codelineno-3-186" name="__codelineno-3-186" href="#__codelineno-3-186"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Distance to the nearest encoded training image, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: "</span>
+</span><span id="__span-3-187"><a id="__codelineno-3-187" name="__codelineno-3-187" href="#__codelineno-3-187"></a>              <span class="sa">f</span><span class="s2">"median </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, 90th percentile </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span><span class="w"> </span><span class="mf">0.9</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-188"><a id="__codelineno-3-188" name="__codelineno-3-188" href="#__codelineno-3-188"></a>    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">history</span><span class="p">,</span> <span class="n">test_rec</span><span class="p">,</span> <span class="n">test_kl</span>
+</span><span id="__span-3-189"><a id="__codelineno-3-189" name="__codelineno-3-189" href="#__codelineno-3-189"></a>
+</span><span id="__span-3-190"><a id="__codelineno-3-190" name="__codelineno-3-190" href="#__codelineno-3-190"></a>
+</span><span id="__span-3-191"><a id="__codelineno-3-191" name="__codelineno-3-191" href="#__codelineno-3-191"></a><span class="k">def</span><span class="w"> </span><span class="nf">plot_encoded</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+</span><span id="__span-3-192"><a id="__codelineno-3-192" name="__codelineno-3-192" href="#__codelineno-3-192"></a>    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+</span><span id="__span-3-193"><a id="__codelineno-3-193" name="__codelineno-3-193" href="#__codelineno-3-193"></a>    <span class="k">for</span> <span class="n">digit</span><span class="p">,</span> <span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">marker</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">DIGIT_STYLES</span><span class="p">):</span>
+</span><span id="__span-3-194"><a id="__codelineno-3-194" name="__codelineno-3-194" href="#__codelineno-3-194"></a>        <span class="n">points</span> <span class="o">=</span> <span class="n">mu</span><span class="p">[</span><span class="n">y_test</span> <span class="o">==</span> <span class="n">digit</span><span class="p">]</span>
+</span><span id="__span-3-195"><a id="__codelineno-3-195" name="__codelineno-3-195" href="#__codelineno-3-195"></a>        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">,</span>
+</span><span id="__span-3-196"><a id="__codelineno-3-196" name="__codelineno-3-196" href="#__codelineno-3-196"></a>                   <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">digit</span><span class="p">))</span>
+</span><span id="__span-3-197"><a id="__codelineno-3-197" name="__codelineno-3-197" href="#__codelineno-3-197"></a>    <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>  <span class="c1"># direct labels, so identity never rests on color alone</span>
+</span><span id="__span-3-198"><a id="__codelineno-3-198" name="__codelineno-3-198" href="#__codelineno-3-198"></a>        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">y_test</span> <span class="o">==</span> <span class="n">digit</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-3-199"><a id="__codelineno-3-199" name="__codelineno-3-199" href="#__codelineno-3-199"></a>        <span class="n">text</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">digit</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">"center"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
+</span><span id="__span-3-200"><a id="__codelineno-3-200" name="__codelineno-3-200" href="#__codelineno-3-200"></a>                       <span class="n">fontweight</span><span class="o">=</span><span class="s2">"bold"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">INK</span><span class="p">)</span>
+</span><span id="__span-3-201"><a id="__codelineno-3-201" name="__codelineno-3-201" href="#__codelineno-3-201"></a>        <span class="n">text</span><span class="o">.</span><span class="n">set_path_effects</span><span class="p">([</span><span class="n">path_effects</span><span class="o">.</span><span class="n">withStroke</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">foreground</span><span class="o">=</span><span class="s2">"white"</span><span class="p">)])</span>
+</span><span id="__span-3-202"><a id="__codelineno-3-202" name="__codelineno-3-202" href="#__codelineno-3-202"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">grid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+</span><span id="__span-3-203"><a id="__codelineno-3-203" name="__codelineno-3-203" href="#__codelineno-3-203"></a>                           <span class="n">fill</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">SECONDARY_INK</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Figure 5 area"</span><span class="p">))</span>
+</span><span id="__span-3-204"><a id="__codelineno-3-204" name="__codelineno-3-204" href="#__codelineno-3-204"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+</span><span id="__span-3-205"><a id="__codelineno-3-205" name="__codelineno-3-205" href="#__codelineno-3-205"></a>        <span class="n">title</span><span class="o">=</span><span class="s2">"Figure 4: $</span><span class="se">\\</span><span class="s2">mu$ of all 10 000 test images, d = 2"</span><span class="p">,</span>
+</span><span id="__span-3-206"><a id="__codelineno-3-206" name="__codelineno-3-206" href="#__codelineno-3-206"></a>        <span class="n">xlabel</span><span class="o">=</span><span class="s2">"$</span><span class="se">\\</span><span class="s2">mu_1$"</span><span class="p">,</span>
+</span><span id="__span-3-207"><a id="__codelineno-3-207" name="__codelineno-3-207" href="#__codelineno-3-207"></a>        <span class="n">ylabel</span><span class="o">=</span><span class="s2">"$</span><span class="se">\\</span><span class="s2">mu_2$"</span><span class="p">,</span>
+</span><span id="__span-3-208"><a id="__codelineno-3-208" name="__codelineno-3-208" href="#__codelineno-3-208"></a>    <span class="p">)</span>
+</span><span id="__span-3-209"><a id="__codelineno-3-209" name="__codelineno-3-209" href="#__codelineno-3-209"></a>    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Digit"</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"center left"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.01</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">markerscale</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span id="__span-3-210"><a id="__codelineno-3-210" name="__codelineno-3-210" href="#__codelineno-3-210"></a>    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">FIGURES</span> <span class="o">/</span> <span class="s2">"fig4.png"</span><span class="p">)</span>
+</span><span id="__span-3-211"><a id="__codelineno-3-211" name="__codelineno-3-211" href="#__codelineno-3-211"></a>    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</span><span id="__span-3-212"><a id="__codelineno-3-212" name="__codelineno-3-212" href="#__codelineno-3-212"></a>
+</span><span id="__span-3-213"><a id="__codelineno-3-213" name="__codelineno-3-213" href="#__codelineno-3-213"></a>
+</span><span id="__span-3-214"><a id="__codelineno-3-214" name="__codelineno-3-214" href="#__codelineno-3-214"></a><span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+</span><span id="__span-3-215"><a id="__codelineno-3-215" name="__codelineno-3-215" href="#__codelineno-3-215"></a><span class="k">def</span><span class="w"> </span><span class="nf">exercise_2</span><span class="p">(</span><span class="n">model_16</span><span class="p">,</span> <span class="n">rec_16</span><span class="p">,</span> <span class="n">kl_16</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">):</span>
+</span><span id="__span-3-216"><a id="__codelineno-3-216" name="__codelineno-3-216" href="#__codelineno-3-216"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== Exercise 2 ==="</span><span class="p">)</span>
+</span><span id="__span-3-217"><a id="__codelineno-3-217" name="__codelineno-3-217" href="#__codelineno-3-217"></a>    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">enable_grad</span><span class="p">():</span>
+</span><span id="__span-3-218"><a id="__codelineno-3-218" name="__codelineno-3-218" href="#__codelineno-3-218"></a>        <span class="n">model</span><span class="p">,</span> <span class="n">history</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">)</span>
+</span><span id="__span-3-219"><a id="__codelineno-3-219" name="__codelineno-3-219" href="#__codelineno-3-219"></a>    <span class="n">test_rec</span><span class="p">,</span> <span class="n">test_kl</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x_test</span><span class="p">)</span>
+</span><span id="__span-3-220"><a id="__codelineno-3-220" name="__codelineno-3-220" href="#__codelineno-3-220"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"d = 2:  test reconstruction </span><span class="si">{</span><span class="n">test_rec</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, KL </span><span class="si">{</span><span class="n">test_kl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, "</span>
+</span><span id="__span-3-221"><a id="__codelineno-3-221" name="__codelineno-3-221" href="#__codelineno-3-221"></a>          <span class="sa">f</span><span class="s2">"negative ELBO </span><span class="si">{</span><span class="n">test_rec</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">test_kl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-222"><a id="__codelineno-3-222" name="__codelineno-3-222" href="#__codelineno-3-222"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"d = 16: test reconstruction </span><span class="si">{</span><span class="n">rec_16</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, KL </span><span class="si">{</span><span class="n">kl_16</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, "</span>
+</span><span id="__span-3-223"><a id="__codelineno-3-223" name="__codelineno-3-223" href="#__codelineno-3-223"></a>          <span class="sa">f</span><span class="s2">"negative ELBO </span><span class="si">{</span><span class="n">rec_16</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kl_16</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-224"><a id="__codelineno-3-224" name="__codelineno-3-224" href="#__codelineno-3-224"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ln(10), the nats needed just to name a digit: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-225"><a id="__codelineno-3-225" name="__codelineno-3-225" href="#__codelineno-3-225"></a>
+</span><span id="__span-3-226"><a id="__codelineno-3-226" name="__codelineno-3-226" href="#__codelineno-3-226"></a>    <span class="c1"># Figure 5: decode a 15 x 15 grid at evenly spaced quantiles of N(0, 1)</span>
+</span><span id="__span-3-227"><a id="__codelineno-3-227" name="__codelineno-3-227" href="#__codelineno-3-227"></a>    <span class="n">grid</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+</span><span id="__span-3-228"><a id="__codelineno-3-228" name="__codelineno-3-228" href="#__codelineno-3-228"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Grid values: </span><span class="si">{</span><span class="n">grid</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-229"><a id="__codelineno-3-229" name="__codelineno-3-229" href="#__codelineno-3-229"></a>    <span class="n">z1</span><span class="p">,</span> <span class="n">z2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">grid</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>  <span class="c1"># z2 grows upward, the same layout as Figure 4</span>
+</span><span id="__span-3-230"><a id="__codelineno-3-230" name="__codelineno-3-230" href="#__codelineno-3-230"></a>    <span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">z1</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">z2</span><span class="o">.</span><span class="n">ravel</span><span class="p">()],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span><span id="__span-3-231"><a id="__codelineno-3-231" name="__codelineno-3-231" href="#__codelineno-3-231"></a>    <span class="n">ticks</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">grid</span><span class="p">]</span>
+</span><span id="__span-3-232"><a id="__codelineno-3-232" name="__codelineno-3-232" href="#__codelineno-3-232"></a>    <span class="n">show_grid</span><span class="p">(</span>
+</span><span id="__span-3-233"><a id="__codelineno-3-233" name="__codelineno-3-233" href="#__codelineno-3-233"></a>        <span class="n">model</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span>
+</span><span id="__span-3-234"><a id="__codelineno-3-234" name="__codelineno-3-234" href="#__codelineno-3-234"></a>        <span class="s2">"Figure 5: the decoded plane, on the $</span><span class="se">\\</span><span class="s2">Phi^{-1}$ grid"</span><span class="p">,</span>
+</span><span id="__span-3-235"><a id="__codelineno-3-235" name="__codelineno-3-235" href="#__codelineno-3-235"></a>        <span class="s2">"$z_1$"</span><span class="p">,</span> <span class="s2">"$z_2$"</span><span class="p">,</span> <span class="s2">"fig5.png"</span><span class="p">,</span>
+</span><span id="__span-3-236"><a id="__codelineno-3-236" name="__codelineno-3-236" href="#__codelineno-3-236"></a>        <span class="n">xticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">,</span> <span class="n">yticks</span><span class="o">=</span><span class="n">ticks</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+</span><span id="__span-3-237"><a id="__codelineno-3-237" name="__codelineno-3-237" href="#__codelineno-3-237"></a>    <span class="p">)</span>
+</span><span id="__span-3-238"><a id="__codelineno-3-238" name="__codelineno-3-238" href="#__codelineno-3-238"></a>
+</span><span id="__span-3-239"><a id="__codelineno-3-239" name="__codelineno-3-239" href="#__codelineno-3-239"></a>    <span class="c1"># Figure 4, with the area that Figure 5 covers marked on it</span>
+</span><span id="__span-3-240"><a id="__codelineno-3-240" name="__codelineno-3-240" href="#__codelineno-3-240"></a>    <span class="n">mu</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_test</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span><span id="__span-3-241"><a id="__codelineno-3-241" name="__codelineno-3-241" href="#__codelineno-3-241"></a>    <span class="n">labels</span> <span class="o">=</span> <span class="n">y_test</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</span><span id="__span-3-242"><a id="__codelineno-3-242" name="__codelineno-3-242" href="#__codelineno-3-242"></a>    <span class="n">plot_encoded</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">grid</span><span class="p">)</span>
+</span><span id="__span-3-243"><a id="__codelineno-3-243" name="__codelineno-3-243" href="#__codelineno-3-243"></a>    <span class="n">inside</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</span><span id="__span-3-244"><a id="__codelineno-3-244" name="__codelineno-3-244" href="#__codelineno-3-244"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Test points inside the Figure 5 area: </span><span class="si">{</span><span class="n">inside</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-245"><a id="__codelineno-3-245" name="__codelineno-3-245" href="#__codelineno-3-245"></a>
+</span><span id="__span-3-246"><a id="__codelineno-3-246" name="__codelineno-3-246" href="#__codelineno-3-246"></a>    <span class="c1"># Which digits overlap? How often a point's nearest neighbour is another digit.</span>
+</span><span id="__span-3-247"><a id="__codelineno-3-247" name="__codelineno-3-247" href="#__codelineno-3-247"></a>    <span class="n">neighbour</span> <span class="o">=</span> <span class="n">cKDTree</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">workers</span><span class="o">=-</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-3-248"><a id="__codelineno-3-248" name="__codelineno-3-248" href="#__codelineno-3-248"></a>    <span class="n">mixing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+</span><span id="__span-3-249"><a id="__codelineno-3-249" name="__codelineno-3-249" href="#__codelineno-3-249"></a>    <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">mixing</span><span class="p">,</span> <span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">labels</span><span class="p">[</span><span class="n">neighbour</span><span class="p">]),</span> <span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-3-250"><a id="__codelineno-3-250" name="__codelineno-3-250" href="#__codelineno-3-250"></a>    <span class="n">cross</span> <span class="o">=</span> <span class="n">mixing</span> <span class="o">+</span> <span class="n">mixing</span><span class="o">.</span><span class="n">T</span>
+</span><span id="__span-3-251"><a id="__codelineno-3-251" name="__codelineno-3-251" href="#__codelineno-3-251"></a>    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">cross</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-3-252"><a id="__codelineno-3-252" name="__codelineno-3-252" href="#__codelineno-3-252"></a>    <span class="n">pairs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+</span><span id="__span-3-253"><a id="__codelineno-3-253" name="__codelineno-3-253" href="#__codelineno-3-253"></a>        <span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">cross</span><span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]),</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+</span><span id="__span-3-254"><a id="__codelineno-3-254" name="__codelineno-3-254" href="#__codelineno-3-254"></a>    <span class="p">)</span>
+</span><span id="__span-3-255"><a id="__codelineno-3-255" name="__codelineno-3-255" href="#__codelineno-3-255"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Points whose nearest neighbour is another digit: </span><span class="si">{</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">mixing</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-256"><a id="__codelineno-3-256" name="__codelineno-3-256" href="#__codelineno-3-256"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"Top overlapping pairs (nearest-neighbour links):"</span><span class="p">)</span>
+</span><span id="__span-3-257"><a id="__codelineno-3-257" name="__codelineno-3-257" href="#__codelineno-3-257"></a>    <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">[:</span><span class="mi">6</span><span class="p">]:</span>
+</span><span id="__span-3-258"><a id="__codelineno-3-258" name="__codelineno-3-258" href="#__codelineno-3-258"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-259"><a id="__codelineno-3-259" name="__codelineno-3-259" href="#__codelineno-3-259"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">"Median mu per digit:"</span><span class="p">)</span>
+</span><span id="__span-3-260"><a id="__codelineno-3-260" name="__codelineno-3-260" href="#__codelineno-3-260"></a>    <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+</span><span id="__span-3-261"><a id="__codelineno-3-261" name="__codelineno-3-261" href="#__codelineno-3-261"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">digit</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">labels</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">digit</span><span class="p">],</span><span class="w"> </span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span id="__span-3-262"><a id="__codelineno-3-262" name="__codelineno-3-262" href="#__codelineno-3-262"></a>
+</span><span id="__span-3-263"><a id="__codelineno-3-263" name="__codelineno-3-263" href="#__codelineno-3-263"></a>    <span class="c1"># Figure 6: interpolate in pixel space and in the latent space of the d = 16 model</span>
+</span><span id="__span-3-264"><a id="__codelineno-3-264" name="__codelineno-3-264" href="#__codelineno-3-264"></a>    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">INTERPOLATION_PAIR</span>
+</span><span id="__span-3-265"><a id="__codelineno-3-265" name="__codelineno-3-265" href="#__codelineno-3-265"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Interpolated test indices: </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> (digit </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">a</span><span class="p">])</span><span class="si">}</span><span class="s2">) and </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2"> (digit </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="n">b</span><span class="p">])</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+</span><span id="__span-3-266"><a id="__codelineno-3-266" name="__codelineno-3-266" href="#__codelineno-3-266"></a>    <span class="n">t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-3-267"><a id="__codelineno-3-267" name="__codelineno-3-267" href="#__codelineno-3-267"></a>    <span class="n">x_a</span><span class="p">,</span> <span class="n">x_b</span> <span class="o">=</span> <span class="n">x_test</span><span class="p">[</span><span class="n">a</span><span class="p">],</span> <span class="n">x_test</span><span class="p">[</span><span class="n">b</span><span class="p">]</span>
+</span><span id="__span-3-268"><a id="__codelineno-3-268" name="__codelineno-3-268" href="#__codelineno-3-268"></a>    <span class="n">pixel_row</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">x_a</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">x_b</span>
+</span><span id="__span-3-269"><a id="__codelineno-3-269" name="__codelineno-3-269" href="#__codelineno-3-269"></a>    <span class="n">mu_a</span><span class="p">,</span> <span class="n">mu_b</span> <span class="o">=</span> <span class="n">model_16</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_a</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">model_16</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">x_b</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+</span><span id="__span-3-270"><a id="__codelineno-3-270" name="__codelineno-3-270" href="#__codelineno-3-270"></a>    <span class="n">latent_row</span> <span class="o">=</span> <span class="n">model_16</span><span class="o">.</span><span class="n">decode</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">mu_a</span> <span class="o">+</span> <span class="n">t</span> <span class="o">*</span> <span class="n">mu_b</span><span class="p">)</span>
+</span><span id="__span-3-271"><a id="__codelineno-3-271" name="__codelineno-3-271" href="#__codelineno-3-271"></a>    <span class="n">show_grid</span><span class="p">(</span>
+</span><span id="__span-3-272"><a id="__codelineno-3-272" name="__codelineno-3-272" href="#__codelineno-3-272"></a>        <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">pixel_row</span><span class="p">,</span> <span class="n">latent_row</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-3-273"><a id="__codelineno-3-273" name="__codelineno-3-273" href="#__codelineno-3-273"></a>        <span class="sa">f</span><span class="s2">"Figure 6: from test image </span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s2"> to test image </span><span class="si">{</span><span class="n">b</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+</span><span id="__span-3-274"><a id="__codelineno-3-274" name="__codelineno-3-274" href="#__codelineno-3-274"></a>        <span class="s2">"$t$"</span><span class="p">,</span> <span class="s2">"Interpolation space"</span><span class="p">,</span> <span class="s2">"fig6.png"</span><span class="p">,</span>
+</span><span id="__span-3-275"><a id="__codelineno-3-275" name="__codelineno-3-275" href="#__codelineno-3-275"></a>        <span class="n">xticks</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">t</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()],</span>
+</span><span id="__span-3-276"><a id="__codelineno-3-276" name="__codelineno-3-276" href="#__codelineno-3-276"></a>        <span class="n">yticks</span><span class="o">=</span><span class="p">[</span><span class="s2">"Pixel"</span><span class="p">,</span> <span class="s2">"Latent"</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span>
+</span><span id="__span-3-277"><a id="__codelineno-3-277" name="__codelineno-3-277" href="#__codelineno-3-277"></a>    <span class="p">)</span>
+</span><span id="__span-3-278"><a id="__codelineno-3-278" name="__codelineno-3-278" href="#__codelineno-3-278"></a>    <span class="k">return</span> <span class="n">test_rec</span><span class="p">,</span> <span class="n">test_kl</span>
+</span><span id="__span-3-279"><a id="__codelineno-3-279" name="__codelineno-3-279" href="#__codelineno-3-279"></a>
+</span><span id="__span-3-280"><a id="__codelineno-3-280" name="__codelineno-3-280" href="#__codelineno-3-280"></a>
+</span><span id="__span-3-281"><a id="__codelineno-3-281" name="__codelineno-3-281" href="#__codelineno-3-281"></a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-3-282"><a id="__codelineno-3-282" name="__codelineno-3-282" href="#__codelineno-3-282"></a>    <span class="n">torch</span><span class="o">.</span><span class="n">set_num_threads</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># one thread keeps the floating-point results repeatable</span>
+</span><span id="__span-3-283"><a id="__codelineno-3-283" name="__codelineno-3-283" href="#__codelineno-3-283"></a>    <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+</span><span id="__span-3-284"><a id="__codelineno-3-284" name="__codelineno-3-284" href="#__codelineno-3-284"></a>    <span class="n">model_16</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">rec_16</span><span class="p">,</span> <span class="n">kl_16</span> <span class="o">=</span> <span class="n">exercise_1</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span id="__span-3-285"><a id="__codelineno-3-285" name="__codelineno-3-285" href="#__codelineno-3-285"></a>    <span class="n">exercise_2</span><span class="p">(</span><span class="n">model_16</span><span class="p">,</span> <span class="n">rec_16</span><span class="p">,</span> <span class="n">kl_16</span><span class="p">,</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">x_val</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</span><span id="__span-3-286"><a id="__codelineno-3-286" name="__codelineno-3-286" href="#__codelineno-3-286"></a>
+</span><span id="__span-3-287"><a id="__codelineno-3-287" name="__codelineno-3-287" href="#__codelineno-3-287"></a>
+</span><span id="__span-3-288"><a id="__codelineno-3-288" name="__codelineno-3-288" href="#__codelineno-3-288"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+</span><span id="__span-3-289"><a id="__codelineno-3-289" name="__codelineno-3-289" href="#__codelineno-3-289"></a>    <span class="n">main</span><span class="p">()</span>
+</span></code></pre></div>
+</details>
+<h3 id="d-reconstructions-and-samples">D — Reconstructions and samples<a class="headerlink" href="#d-reconstructions-and-samples" title="Permanent link">¶</a></h3>
+<p>Figure 2 uses the first test image of each digit, at test indices 3, 2, 1, 18, 4, 8, 11, 0, 61 and 7.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig2.png" data-desc-position="bottom"><img alt="Figure 2" src="figures/fig2.png"></a></p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig3.png" data-desc-position="bottom"><img alt="Figure 3" src="figures/fig3.png"></a></p>
+<h3 id="e-analysis">E — Analysis<a class="headerlink" href="#e-analysis" title="Permanent link">¶</a></h3>
+<p><strong>Why would the optimizer pay more KL?</strong> Because the total is what it minimizes, and the trade is very favorable early on. A code that matches the prior says nothing about the image, so the decoder can only output something like an average digit. Moving each <span class="arithmatex">\(q(z \mid x)\)</span> away from the prior costs KL but tells the decoder which image it is looking at. From epoch 1 to epoch 2 the training KL rose by 7.75 nats (6.85 to 14.60), while the reconstruction fell by 59.63 (175.88 to 116.25). The total still fell by 51.88. Part of that drop comes from the decoder simply getting better, but the direction of the trade is clear.</p>
+<p><strong>Why does Figure 3 look worse than Figure 2?</strong></p>
+<ol>
+<li><em>Where the samples land.</em> Figure 2 decodes <span class="arithmatex">\(\mu\)</span> from real images, a region the decoder was trained on. Prior samples can fall between the encoded clouds, where no training image lives. Eleven of the 16 dimensions are active (KL above 0.1), so distances are measured only in those. The median distance to the nearest encoded training image is 1.49 for prior samples, against 1.19 for <span class="arithmatex">\(z\)</span> sampled from test posteriors, about 25% farther. At the 90th percentile it is 1.99 against 1.57. A code between clouds of different digits decodes to a hybrid, which is what the non-digits in Figure 3 look like.</li>
+<li><em>What the decoder outputs.</em> For a given <span class="arithmatex">\(z\)</span>, the decoder returns one probability per pixel, and the loss-optimal value is the average of all images consistent with that code. Several sharp images average into a blurry one. The objective asks for this, so it is not a bug, and it happens even when <span class="arithmatex">\(z\)</span> lands in a well-trained region.</li>
+</ol>
+<p><strong>Why decode <span class="arithmatex">\(\mu\)</span> in Figure 2?</strong> <span class="arithmatex">\(\mu\)</span> is the center of <span class="arithmatex">\(q(z \mid x)\)</span>, the encoder's best single answer for that image. A sampled <span class="arithmatex">\(z\)</span> adds noise <span class="arithmatex">\(\sigma\epsilon\)</span>, so the picture would change on every draw and would mix what the model retained with sampling noise. On the test set, decoding <span class="arithmatex">\(\mu\)</span> costs 76.53 nats of reconstruction against 81.96 for a sampled <span class="arithmatex">\(z\)</span>. The reported 81.96 keeps the sample because that is the ELBO's term.</p>
+<h2 id="exercise-2">Exercise 2<a class="headerlink" href="#exercise-2" title="Permanent link">¶</a></h2>
+<h3 id="a-train-a-2-d-vae">A — Train a 2-D VAE<a class="headerlink" href="#a-train-a-2-d-vae" title="Permanent link">¶</a></h3>
+<p>Same model, data, seed, <span class="arithmatex">\(\beta\)</span> and budget, changing only <span class="arithmatex">\(d\)</span>:</p>
+<table>
+<thead>
+<tr>
+<th>Test set</th>
+<th>Reconstruction</th>
+<th>KL</th>
+<th>Negative ELBO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(d = 16\)</span></td>
+<td>81.96</td>
+<td>19.36</td>
+<td>101.31</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(d = 2\)</span></td>
+<td><strong>135.26</strong></td>
+<td><strong>6.69</strong></td>
+<td>141.95</td>
+</tr>
+</tbody>
+</table>
+<p>Going down to two dimensions costs 53.30 nats of reconstruction and saves only 12.67 of KL, so the negative ELBO is 40.64 nats worse.</p>
+<h3 id="b-the-encoded-test-set">B — The encoded test set<a class="headerlink" href="#b-the-encoded-test-set" title="Permanent link">¶</a></h3>
+<p>The black rectangle marks the area decoded in Figure 5, which holds 75.0% of the test points.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig4.png" data-desc-position="bottom"><img alt="Figure 4" src="figures/fig4.png"></a></p>
+<h3 id="c-the-decoded-plane">C — The decoded plane<a class="headerlink" href="#c-the-decoded-plane" title="Permanent link">¶</a></h3>
+<p>Evenly spaced quantiles put the same probability between neighboring grid values under <span class="arithmatex">\(N(0, 1)\)</span>, and the two dimensions of the prior are independent, so every cell holds the same prior mass.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig5.png" data-desc-position="bottom"><img alt="Figure 5" src="figures/fig5.png"></a></p>
+<h3 id="d-interpolation">D — Interpolation<a class="headerlink" href="#d-interpolation" title="Permanent link">¶</a></h3>
+<p>The interpolated test images are <strong>index 3 (digit 0)</strong> and <strong>index 2 (digit 1)</strong>. The latent row uses the <span class="arithmatex">\(d = 16\)</span> model from Exercise 1.</p>
+<p><a class="glightbox" data-type="image" data-width="auto" data-height="auto" href="figures/fig6.png" data-desc-position="bottom"><img alt="Figure 6" src="figures/fig6.png"></a></p>
+<h3 id="e-analysis_1">E — Analysis<a class="headerlink" href="#e-analysis_1" title="Permanent link">¶</a></h3>
+<p><strong>Which digits overlap?</strong> Mainly 4 and 9, then 3 and 5. For 25.5% of the test points, the nearest neighbor in Figure 4 is a different digit. Counting those links per pair gives 574 for 4 and 9, and 423 for 3 and 5. The next pairs are 5 and 8 (229), 3 and 8 (194), and 7 and 9 (190). The medians of 4 and 9 are only 0.15 apart, at (0.32, 0.60) and (0.46, 0.55).</p>
+<p>Figure 5 shows the same transition. In the row <span class="arithmatex">\(z_2 = 0.70\)</span>, the images read as 4 up to <span class="arithmatex">\(z_1 = 0.16\)</span> and as 9 from <span class="arithmatex">\(z_1 = 0.50\)</span>. Between them, at <span class="arithmatex">\(z_1 = 0.33\)</span>, the open top of the 4 is partly closed and smudged, an image that could be read as either digit. The bottom row shows the same for 3 and 5 around <span class="arithmatex">\(z_1 = 0.33\)</span> to <span class="arithmatex">\(0.50\)</span>, where the top stroke changes shape. The in-between images are blurrier than those at the center of each digit's region.</p>
+<p><strong>What do two numbers force the model to throw away?</strong> Style. The KL gives an upper bound on what the code carries per image: 6.69 nats at <span class="arithmatex">\(d = 2\)</span>. Naming a digit alone takes <span class="arithmatex">\(\ln 10 = 2.30\)</span> nats, which leaves at most 4.39 nats for everything else, against 17.06 at <span class="arithmatex">\(d = 16\)</span>. Figure 5 is the evidence. A position in the plane decodes to exactly one image, and most of the plane goes to digit identity. What remains is mostly slant: the 1s in the right column lean more toward the bottom, and the 0s in the left column stand up. Stroke thickness, loop size and each writer's quirks have no axis of their own, so they get averaged away. That is where the extra 53.30 nats of reconstruction go.</p>
+<p><strong>Which interpolation looks like digits?</strong> The latent row. The pixel row is a weighted overlay: at <span class="arithmatex">\(t = 0.44\)</span> and <span class="arithmatex">\(0.56\)</span> the ring of the 0 and the bar of the 1 appear together at partial intensity, which no digit looks like. A straight line between two images in pixel space leaves the set of digit images.</p>
+<p>The latent row always decodes a single shape: the ring narrows and collapses into the bar, reaching a clean 1 by <span class="arithmatex">\(t = 0.78\)</span>. The line between <span class="arithmatex">\(\mu_a\)</span> and <span class="arithmatex">\(\mu_b\)</span> stays in a space where the KL made the encoded clouds overlap, and the decoder learned to output digit-like images there. It is not perfect: at <span class="arithmatex">\(t = 0.44\)</span> and <span class="arithmatex">\(0.56\)</span> the images are blurry and look like a rough 8, because the path crosses the area between the two digits' regions.</p>
+<h2 id="results-summary">Results summary<a class="headerlink" href="#results-summary" title="Permanent link">¶</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Quantity</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Ex. 1 — test reconstruction, KL and negative ELBO (<span class="arithmatex">\(d = 16\)</span>)</td>
+<td>81.96; 19.36; 101.31 nats per image</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ex. 1 — validation KL at the first and at the last epoch</td>
+<td>12.48 (epoch 1); 19.30 (epoch 20)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Ex. 2 — test reconstruction and KL (<span class="arithmatex">\(d = 2\)</span>)</td>
+<td>135.26; 6.69 nats per image</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Ex. 2 — the two test indices interpolated</td>
+<td>3 (digit 0) and 2 (digit 1)</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2026 20:05:53 UTC">November 6, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"></path></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="November 6, 2026 20:05:53 UTC">November 6, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden="">
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "content.code.select", "content.code.annotate", "content.tooltips", "navigation.instant", "navigation.instant.progress", "navigation.top", "navigation.path", "navigation.tracking", "navigation.expand", "toc.follow"], "search": "../../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c21346df.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  
+<script id="init-glightbox">const lightbox = GLightbox({"touchNavigation": true, "loop": false, "zoomable": true, "draggable": true, "openEffect": "zoom", "closeEffect": "zoom", "slideEffect": "slide"});
+document$.subscribe(()=>{ lightbox.reload(); });
+</script></body></html>

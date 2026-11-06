@@ -2,7 +2,7 @@
 
 Portfolio for the course Artificial Neural Networks and Deep Learning (Insper, 2026.2).
 
-Published site: <https://henriquetg1.github.io/ann-dl/>
+Published site: <https://henriquetg1.github.io/>
 
 ## Setup
 

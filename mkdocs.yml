@@ -1,8 +1,8 @@
 site_name: ANN & Deep Learning — Henrique Turco
 site_author: Henrique Turco
-site_url: https://henriquetg1.github.io/ann-dl/
-repo_url: https://github.com/henriquetg1/ann-dl
-repo_name: henriquetg1/ann-dl
+site_url: https://henriquetg1.github.io/
+repo_url: https://github.com/henriquetg1/henriquetg1.github.io
+repo_name: henriquetg1/henriquetg1.github.io
 
 # Table fragments are pulled into the reports with snippets, not pages of their own
 exclude_docs: |

@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://henriquetg1.github.io/ann-dl/</loc>
+         <loc>https://henriquetg1.github.io/</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>
-         <loc>https://henriquetg1.github.io/ann-dl/exercises/data/</loc>
+         <loc>https://henriquetg1.github.io/exercises/data/</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>
-         <loc>https://henriquetg1.github.io/ann-dl/exercises/mlp/</loc>
+         <loc>https://henriquetg1.github.io/exercises/mlp/</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>
-         <loc>https://henriquetg1.github.io/ann-dl/exercises/perceptron/</loc>
+         <loc>https://henriquetg1.github.io/exercises/perceptron/</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
     <url>
-         <loc>https://henriquetg1.github.io/ann-dl/exercises/vae/</loc>
+         <loc>https://henriquetg1.github.io/exercises/vae/</loc>
          <lastmod>2026-11-06</lastmod>
     </url>
 </urlset>
